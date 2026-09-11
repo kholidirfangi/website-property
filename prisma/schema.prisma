@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(ADMIN)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Property {
+  id           String          @id @default(cuid())
+  title        String
+  slug         String          @unique
+  description  String?
+  type         PropertyType
+  status       PropertyStatus  @default(AVAILABLE)
+  listingType  ListingType     @default(SALE)
+  price        Decimal
+  rentPeriod   RentPeriod?
+  landArea     Float?
+  buildingArea Float?
+  bedrooms     Int?
+  bathrooms    Int?
+  floors       Int?
+  address      String?
+  city         String?
+  district     String?
+  province     String?
+  postalCode   String?
+  latitude     Float?
+  longitude    Float?
+  isFeatured   Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  leads        Lead[]
+  images       PropertyImage[]
+}
+
+model PropertyImage {
+  id         String   @id @default(cuid())
+  propertyId String
+  url        String
+  publicId   String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model Lead {
+  id         String     @id @default(cuid())
+  name       String
+  phone      String
+  email      String?
+  message    String?
+  status     LeadStatus @default(NEW)
+  source     LeadSource @default(WEBSITE)
+  propertyId String?
+  createdAt  DateTime   @default(now())
+  property   Property?  @relation(fields: [propertyId], references: [id])
+}
+
+enum UserRole {
+  ADMIN
+  SUPERADMIN
+}
+
+enum PropertyType {
+  HOUSE
+  LAND
+  SHOPHOUSE
+  APARTMENT
+  VILLA
+  OFFICE
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  SOLD
+  RENTED
+}
+
+enum ListingType {
+  SALE
+  RENT
+}
+
+enum RentPeriod {
+  MONTH
+  YEAR
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  LOST
+}
+
+enum LeadSource {
+  WEBSITE
+  WHATSAPP
+  INSTAGRAM
+  OTHER
+}
