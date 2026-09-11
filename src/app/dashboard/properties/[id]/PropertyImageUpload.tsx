@@ -3,6 +3,10 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 2000;
+const JPEG_QUALITY = 0.82;
+
 export default function PropertyImageUpload({
   propertyId,
 }: {
@@ -14,6 +18,11 @@ export default function PropertyImageUpload({
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const [uploadProgress, setUploadProgress] = useState({
+    current: 0,
+    total: 0,
+  });
 
   async function compressImage(file: File): Promise<File> {
     const image = new Image();
@@ -31,18 +40,18 @@ export default function PropertyImageUpload({
         image.src = objectUrl;
       });
 
-      const maxSize = 2000;
-
       let width = image.naturalWidth;
       let height = image.naturalHeight;
 
-      if (width > maxSize || height > maxSize) {
+      if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
         if (width > height) {
-          height = Math.round((height * maxSize) / width);
-          width = maxSize;
+          height = Math.round((height * MAX_IMAGE_SIZE) / width);
+
+          width = MAX_IMAGE_SIZE;
         } else {
-          width = Math.round((width * maxSize) / height);
-          height = maxSize;
+          width = Math.round((width * MAX_IMAGE_SIZE) / height);
+
+          height = MAX_IMAGE_SIZE;
         }
       }
 
@@ -60,7 +69,7 @@ export default function PropertyImageUpload({
       context.drawImage(image, 0, 0, width, height);
 
       const blob = await new Promise<Blob | null>((resolve) => {
-        canvas.toBlob(resolve, "image/jpeg", 0.82);
+        canvas.toBlob(resolve, "image/jpeg", JPEG_QUALITY);
       });
 
       if (!blob) {
@@ -76,92 +85,138 @@ export default function PropertyImageUpload({
     }
   }
 
+  async function uploadImage(file: File) {
+    if (!file.type.startsWith("image/")) {
+      throw new Error(`"${file.name}" bukan file gambar.`);
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error(`"${file.name}" terlalu besar. Maksimal 10 MB.`);
+    }
+
+    const compressedFile = await compressImage(file);
+
+    console.log(
+      `${file.name} - Original:`,
+      (file.size / 1024 / 1024).toFixed(2),
+      "MB",
+    );
+
+    console.log(
+      `${file.name} - Compressed:`,
+      (compressedFile.size / 1024 / 1024).toFixed(2),
+      "MB",
+    );
+
+    const formData = new FormData();
+
+    formData.append("file", compressedFile);
+
+    const response = await fetch(`/api/properties/${propertyId}/images`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message ?? "Gagal mengupload gambar.");
+    }
+  }
+
   async function handleUpload() {
-    const file = inputRef.current?.files?.[0];
+    const files = inputRef.current?.files;
 
     setMessage("");
     setError("");
 
-    if (!file) {
+    if (!files || files.length === 0) {
       setError("Pilih gambar terlebih dahulu.");
-      return;
-    }
-
-    // Validasi tipe file
-    if (!file.type.startsWith("image/")) {
-      setError("File harus berupa gambar.");
-      return;
-    }
-
-    // Maksimal 10 MB sebelum compression
-    const maxFileSize = 10 * 1024 * 1024;
-
-    if (file.size > maxFileSize) {
-      setError("Ukuran gambar terlalu besar. Maksimal 10 MB.");
       return;
     }
 
     setLoading(true);
 
+    setUploadProgress({
+      current: 0,
+      total: files.length,
+    });
+
+    let successCount = 0;
+    const failedFiles: string[] = [];
+
     try {
-      const compressedFile = await compressImage(file);
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
 
-      console.log("Original:", (file.size / 1024 / 1024).toFixed(2), "MB");
+        setUploadProgress({
+          current: i + 1,
+          total: files.length,
+        });
 
-      console.log(
-        "Compressed:",
-        (compressedFile.size / 1024 / 1024).toFixed(2),
-        "MB",
-      );
+        try {
+          await uploadImage(file);
 
-      const formData = new FormData();
+          successCount++;
+        } catch (error) {
+          console.error(`UPLOAD ERROR: ${file.name}`, error);
 
-      formData.append("file", compressedFile);
-
-      const response = await fetch(`/api/properties/${propertyId}/images`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message ?? "Gagal mengupload gambar.");
-        return;
+          failedFiles.push(error instanceof Error ? error.message : file.name);
+        }
       }
 
-      setMessage("Gambar berhasil diupload.");
+      if (successCount > 0) {
+        setMessage(
+          `${successCount} dari ${files.length} gambar berhasil diupload.`,
+        );
 
-      if (inputRef.current) {
-        inputRef.current.value = "";
+        if (inputRef.current) {
+          inputRef.current.value = "";
+        }
+
+        router.refresh();
       }
 
-      router.refresh();
+      if (failedFiles.length > 0) {
+        setError(
+          `${failedFiles.length} gambar gagal diupload: ${failedFiles.join(
+            " | ",
+          )}`,
+        );
+      }
     } catch (error) {
-      console.error("IMAGE UPLOAD ERROR:", error);
+      console.error("MULTIPLE IMAGE UPLOAD ERROR:", error);
 
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Terjadi kesalahan saat upload gambar.");
-      }
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat upload gambar.",
+      );
     } finally {
       setLoading(false);
+
+      setUploadProgress({
+        current: 0,
+        total: 0,
+      });
     }
   }
+
+  const isUploading = loading && uploadProgress.total > 0;
 
   return (
     <div className="mt-6 rounded-xl bg-white p-6 shadow">
       {" "}
       <h2 className="text-lg font-semibold">Foto Properti </h2>
       <p className="mt-1 text-sm text-gray-500">
-        Upload foto untuk properti ini.
+        Pilih satu atau beberapa foto untuk diupload.
       </p>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <input
           ref={inputRef}
           type="file"
           accept="image/*"
+          multiple
           disabled={loading}
           className="block w-full rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
         />
@@ -176,8 +231,30 @@ export default function PropertyImageUpload({
         </button>
       </div>
       <p className="mt-2 text-xs text-gray-400">
-        Format gambar yang didukung. Maksimal ukuran file 10 MB.
+        Format gambar yang didukung. Maksimal 10 MB per gambar.
       </p>
+      {isUploading && (
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600">Mengupload gambar...</span>
+
+            <span className="font-medium">
+              {uploadProgress.current} / {uploadProgress.total}
+            </span>
+          </div>
+
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200">
+            <div
+              className="h-full rounded-full bg-black transition-all duration-300"
+              style={{
+                width: `${
+                  (uploadProgress.current / uploadProgress.total) * 100
+                }%`,
+              }}
+            />
+          </div>
+        </div>
+      )}
       {message && <p className="mt-3 text-sm text-green-600">{message}</p>}
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
     </div>
