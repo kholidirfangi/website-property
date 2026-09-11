@@ -77,6 +77,19 @@ export async function POST(request: Request, { params }: RouteContext) {
       );
     }
 
+    // Maksimal 10 MB
+    const maxFileSize = 10 * 1024 * 1024;
+
+    if (file.size > maxFileSize) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Ukuran gambar terlalu besar. Maksimal 10 MB.",
+        },
+        { status: 400 },
+      );
+    }
+
     // Konversi File → Buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
