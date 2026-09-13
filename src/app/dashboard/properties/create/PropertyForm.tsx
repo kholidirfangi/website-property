@@ -13,6 +13,17 @@ export default function PropertyForm() {
   const [status, setStatus] = useState("");
   const [listingType, setListingType] = useState("");
 
+  const [address, setAddress] = useState("");
+  const [district, setDistrict] = useState("");
+  const [province, setProvince] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+
+  const [landArea, setLandArea] = useState("");
+  const [buildingArea, setBuildingArea] = useState("");
+  const [bedrooms, setBedrooms] = useState("");
+  const [bathrooms, setBathrooms] = useState("");
+  const [floors, setFloors] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -89,6 +100,17 @@ export default function PropertyForm() {
           price: numericPrice,
           status,
           listingType,
+
+          address: address.trim(),
+          district: district.trim(),
+          province: province.trim(),
+          postalCode: postalCode.trim(),
+
+          landArea: landArea ? Number(landArea) : null,
+          buildingArea: buildingArea ? Number(buildingArea) : null,
+          bedrooms: bedrooms ? Number(bedrooms) : null,
+          bathrooms: bathrooms ? Number(bathrooms) : null,
+          floors: floors ? Number(floors) : null,
         }),
       });
 
@@ -239,6 +261,182 @@ export default function PropertyForm() {
 
           <option value="RENT">Rent</option>
         </select>
+      </div>
+
+      <div className="space-y-6 rounded-xl border p-6">
+        <div>
+          <h2 className="text-lg font-semibold">Lokasi Properti</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Informasi lokasi properti.
+          </p>
+        </div>
+
+        <div>
+          <label htmlFor="address" className="block text-sm font-medium">
+            Alamat
+          </label>
+
+          <textarea
+            id="address"
+            value={address}
+            onChange={(event) => setAddress(event.target.value)}
+            className="mt-2 w-full rounded-lg border px-4 py-2"
+            placeholder="Contoh: Jl. Pahlawan No. 10"
+            rows={3}
+            disabled={loading}
+          />
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <div>
+            <label htmlFor="district" className="block text-sm font-medium">
+              Kecamatan
+            </label>
+
+            <input
+              id="district"
+              type="text"
+              value={district}
+              onChange={(event) => setDistrict(event.target.value)}
+              className="mt-2 w-full rounded-lg border px-4 py-2"
+              placeholder="Contoh: Kebumen"
+              disabled={loading}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="province" className="block text-sm font-medium">
+              Provinsi
+            </label>
+
+            <input
+              id="province"
+              type="text"
+              value={province}
+              onChange={(event) => setProvince(event.target.value)}
+              className="mt-2 w-full rounded-lg border px-4 py-2"
+              placeholder="Contoh: Jawa Tengah"
+              disabled={loading}
+            />
+          </div>
+        </div>
+
+        <div className="max-w-sm">
+          <label htmlFor="postalCode" className="block text-sm font-medium">
+            Kode Pos
+          </label>
+
+          <input
+            id="postalCode"
+            type="text"
+            value={postalCode}
+            onChange={(event) => setPostalCode(event.target.value)}
+            className="mt-2 w-full rounded-lg border px-4 py-2"
+            placeholder="Contoh: 54311"
+            disabled={loading}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-6 rounded-xl border p-6">
+        <div>
+          <h2 className="text-lg font-semibold">Detail Properti</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Informasi fisik properti.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <div>
+            <label htmlFor="landArea" className="block text-sm font-medium">
+              Luas Tanah (m²)
+            </label>
+
+            <input
+              id="landArea"
+              type="number"
+              value={landArea}
+              onChange={(event) => setLandArea(event.target.value)}
+              className="mt-2 w-full rounded-lg border px-4 py-2"
+              placeholder="Contoh: 120"
+              min="0"
+              step="0.01"
+              disabled={loading}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="buildingArea" className="block text-sm font-medium">
+              Luas Bangunan (m²)
+            </label>
+
+            <input
+              id="buildingArea"
+              type="number"
+              value={buildingArea}
+              onChange={(event) => setBuildingArea(event.target.value)}
+              className="mt-2 w-full rounded-lg border px-4 py-2"
+              placeholder="Contoh: 80"
+              min="0"
+              step="0.01"
+              disabled={loading}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="bedrooms" className="block text-sm font-medium">
+              Kamar Tidur
+            </label>
+
+            <input
+              id="bedrooms"
+              type="number"
+              value={bedrooms}
+              onChange={(event) => setBedrooms(event.target.value)}
+              className="mt-2 w-full rounded-lg border px-4 py-2"
+              placeholder="Contoh: 3"
+              min="0"
+              step="1"
+              disabled={loading}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="bathrooms" className="block text-sm font-medium">
+              Kamar Mandi
+            </label>
+
+            <input
+              id="bathrooms"
+              type="number"
+              value={bathrooms}
+              onChange={(event) => setBathrooms(event.target.value)}
+              className="mt-2 w-full rounded-lg border px-4 py-2"
+              placeholder="Contoh: 2"
+              min="0"
+              step="1"
+              disabled={loading}
+            />
+          </div>
+        </div>
+
+        <div className="max-w-sm">
+          <label htmlFor="floors" className="block text-sm font-medium">
+            Jumlah Lantai
+          </label>
+
+          <input
+            id="floors"
+            type="number"
+            value={floors}
+            onChange={(event) => setFloors(event.target.value)}
+            className="mt-2 w-full rounded-lg border px-4 py-2"
+            placeholder="Contoh: 2"
+            min="1"
+            step="1"
+            disabled={loading}
+          />
+        </div>
       </div>
       <button
         type="submit"

@@ -54,8 +54,46 @@ export async function POST(request: Request) {
     const type = String(body.type ?? "").trim();
     const city = String(body.city ?? "").trim();
     const price = Number(body.price);
-    const status = String(body.status ?? "").trim();
-    const listingType = String(body.listingType ?? "").trim();
+    const status = String(body.status ?? "");
+    const listingType = String(body.listingType ?? "");
+
+    const address = String(body.address ?? "").trim();
+    const district = String(body.district ?? "").trim();
+    const province = String(body.province ?? "").trim();
+    const postalCode = String(body.postalCode ?? "").trim();
+
+    const landArea =
+      body.landArea !== null &&
+      body.landArea !== undefined &&
+      body.landArea !== ""
+        ? Number(body.landArea)
+        : null;
+
+    const buildingArea =
+      body.buildingArea !== null &&
+      body.buildingArea !== undefined &&
+      body.buildingArea !== ""
+        ? Number(body.buildingArea)
+        : null;
+
+    const bedrooms =
+      body.bedrooms !== null &&
+      body.bedrooms !== undefined &&
+      body.bedrooms !== ""
+        ? Number(body.bedrooms)
+        : null;
+
+    const bathrooms =
+      body.bathrooms !== null &&
+      body.bathrooms !== undefined &&
+      body.bathrooms !== ""
+        ? Number(body.bathrooms)
+        : null;
+
+    const floors =
+      body.floors !== null && body.floors !== undefined && body.floors !== ""
+        ? Number(body.floors)
+        : null;
 
     // =========================
     // VALIDASI TITLE
@@ -214,6 +252,17 @@ export async function POST(request: Request) {
         price,
         status: status as (typeof PROPERTY_STATUSES)[number],
         listingType: listingType as (typeof LISTING_TYPES)[number],
+
+        address,
+        district,
+        province,
+        postalCode,
+
+        landArea,
+        buildingArea,
+        bedrooms,
+        bathrooms,
+        floors,
       },
     });
 
