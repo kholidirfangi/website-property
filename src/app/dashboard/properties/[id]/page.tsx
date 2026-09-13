@@ -5,6 +5,12 @@ import { prisma } from "@/lib/prisma";
 import DeletePropertyButton from "./DeletePropertyButton";
 import PropertyImageUpload from "./PropertyImageUpload";
 import PropertyImageGallery from "./PropertyImageGallery";
+import {
+  formatListingType,
+  formatPrice,
+  formatPropertyStatus,
+  formatPropertyType,
+} from "@/lib/property-format";
 
 type PropertyDetailPageProps = {
   params: Promise<{
@@ -83,22 +89,30 @@ export default async function PropertyDetailPage({
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
             <div>
               <p className="text-sm text-gray-500">Tipe Properti</p>
-              <p className="mt-1 font-medium">{property.type}</p>
+              <p className="mt-1 font-medium">
+                {formatPropertyType(property.type)}
+              </p>
             </div>
 
             <div>
               <p className="text-sm text-gray-500">Status</p>
-              <p className="mt-1 font-medium">{property.status}</p>
+              <p className="mt-1 font-medium">
+                {formatPropertyStatus(property.status)}
+              </p>
             </div>
 
             <div>
               <p className="text-sm text-gray-500">Listing</p>
-              <p className="mt-1 font-medium">{property.listingType}</p>
+              <p className="mt-1 font-medium">
+                {formatListingType(property.listingType)}
+              </p>
             </div>
 
             <div>
               <p className="text-sm text-gray-500">Harga</p>
-              <p className="mt-1 font-medium">Rp {property.price.toString()}</p>
+              <p className="mt-1 font-medium">
+                Rp {formatPrice(property.price.toString())}
+              </p>
             </div>
 
             <div>

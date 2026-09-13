@@ -2,6 +2,12 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/current-user";
+import {
+  formatListingType,
+  formatPrice,
+  formatPropertyStatus,
+  formatPropertyType,
+} from "@/lib/property-format";
 
 export default async function PropertiesPage() {
   const user = await getCurrentUser();
@@ -73,14 +79,21 @@ export default async function PropertiesPage() {
                       <p className="text-gray-500">{property.city || "-"}</p>
                     </td>
 
-                    <td className="px-6 py-4">{property.type}</td>
+                    <td className="px-6 py-4">
+                      {" "}
+                      {formatPropertyType(property.type)}
+                    </td>
 
-                    <td className="px-6 py-4">{property.status}</td>
+                    <td className="px-6 py-4">
+                      {formatPropertyStatus(property.status)}
+                    </td>
 
-                    <td className="px-6 py-4">{property.listingType}</td>
+                    <td className="px-6 py-4">
+                      {formatListingType(property.listingType)}
+                    </td>
 
                     <td className="px-6 py-4 font-medium">
-                      Rp {property.price.toString()}
+                      Rp {formatPrice(property.price.toString())}
                     </td>
                   </tr>
                 ))}
