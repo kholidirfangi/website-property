@@ -54,6 +54,43 @@ export async function PUT(request: Request, { params }: RouteContext) {
     const price = Number(body.price);
     const status = String(body.status ?? "").trim();
     const listingType = String(body.listingType ?? "").trim();
+    const address = String(body.address ?? "").trim();
+    const district = String(body.district ?? "").trim();
+    const province = String(body.province ?? "").trim();
+    const postalCode = String(body.postalCode ?? "").trim();
+
+    const landArea =
+      body.landArea !== null &&
+      body.landArea !== undefined &&
+      body.landArea !== ""
+        ? Number(body.landArea)
+        : null;
+
+    const buildingArea =
+      body.buildingArea !== null &&
+      body.buildingArea !== undefined &&
+      body.buildingArea !== ""
+        ? Number(body.buildingArea)
+        : null;
+
+    const bedrooms =
+      body.bedrooms !== null &&
+      body.bedrooms !== undefined &&
+      body.bedrooms !== ""
+        ? Number(body.bedrooms)
+        : null;
+
+    const bathrooms =
+      body.bathrooms !== null &&
+      body.bathrooms !== undefined &&
+      body.bathrooms !== ""
+        ? Number(body.bathrooms)
+        : null;
+
+    const floors =
+      body.floors !== null && body.floors !== undefined && body.floors !== ""
+        ? Number(body.floors)
+        : null;
 
     if (
       !title ||
@@ -96,11 +133,22 @@ export async function PUT(request: Request, { params }: RouteContext) {
       },
       data: {
         title,
-        type: type as never,
+        type: type as (typeof validTypes)[number],
         city,
         price,
-        status: status as never,
-        listingType: listingType as never,
+        status: status as (typeof validStatuses)[number],
+        listingType: listingType as (typeof validListingTypes)[number],
+
+        address,
+        district,
+        province,
+        postalCode,
+
+        landArea,
+        buildingArea,
+        bedrooms,
+        bathrooms,
+        floors,
       },
     });
 

@@ -61,6 +61,15 @@ export default async function EditPropertyPage({
               price: property.price.toString(),
               status: property.status,
               listingType: property.listingType,
+              address: property.address,
+              district: property.district,
+              province: property.province,
+              postalCode: property.postalCode,
+              landArea: property.landArea,
+              buildingArea: property.buildingArea,
+              bedrooms: property.bedrooms,
+              bathrooms: property.bathrooms,
+              floors: property.floors,
             }}
           />
         </div>

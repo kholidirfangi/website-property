@@ -78,29 +78,89 @@ export default async function PropertyDetailPage({
         />
 
         <div className="mt-6 rounded-xl bg-white p-6 shadow">
-          <div className="grid gap-6 sm:grid-cols-2">
+          <h2 className="text-lg font-semibold">Informasi Properti</h2>
+
+          <div className="mt-6 grid gap-6 sm:grid-cols-2">
             <div>
               <p className="text-sm text-gray-500">Tipe Properti</p>
-
               <p className="mt-1 font-medium">{property.type}</p>
             </div>
 
             <div>
               <p className="text-sm text-gray-500">Status</p>
-
               <p className="mt-1 font-medium">{property.status}</p>
             </div>
 
             <div>
               <p className="text-sm text-gray-500">Listing</p>
-
               <p className="mt-1 font-medium">{property.listingType}</p>
             </div>
 
             <div>
               <p className="text-sm text-gray-500">Harga</p>
-
               <p className="mt-1 font-medium">Rp {property.price.toString()}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">Luas Tanah</p>
+              <p className="mt-1 font-medium">
+                {property.landArea ? `${property.landArea} m²` : "-"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">Luas Bangunan</p>
+              <p className="mt-1 font-medium">
+                {property.buildingArea ? `${property.buildingArea} m²` : "-"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">Kamar Tidur</p>
+              <p className="mt-1 font-medium">{property.bedrooms ?? "-"}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">Kamar Mandi</p>
+              <p className="mt-1 font-medium">{property.bathrooms ?? "-"}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">Jumlah Lantai</p>
+              <p className="mt-1 font-medium">{property.floors ?? "-"}</p>
+            </div>
+          </div>
+
+          <div className="mt-8 border-t pt-6">
+            <h3 className="text-base font-semibold">Lokasi</h3>
+
+            <div className="mt-4 space-y-3">
+              <div>
+                <p className="text-sm text-gray-500">Alamat</p>
+                <p className="mt-1 font-medium">{property.address || "-"}</p>
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-3">
+                <div>
+                  <p className="text-sm text-gray-500">Kecamatan</p>
+                  <p className="mt-1 font-medium">{property.district || "-"}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">Kota</p>
+                  <p className="mt-1 font-medium">{property.city || "-"}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">Provinsi</p>
+                  <p className="mt-1 font-medium">{property.province || "-"}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Kode Pos</p>
+                <p className="mt-1 font-medium">{property.postalCode || "-"}</p>
+              </div>
             </div>
           </div>
         </div>
