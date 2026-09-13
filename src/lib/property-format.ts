@@ -33,3 +33,23 @@ export function formatListingType(listingType: string) {
 export function formatPrice(price: number | string) {
   return new Intl.NumberFormat("id-ID").format(Number(price));
 }
+
+export function formatLeadStatus(status: string) {
+  const statuses: Record<string, string> = {
+    NEW: "Baru",
+    CONTACTED: "Sudah Dihubungi",
+    QUALIFIED: "Qualified",
+    CONVERTED: "Converted",
+    LOST: "Lost",
+  };
+
+  return statuses[status] ?? status;
+}
+
+export function formatLeadSource(source: string) {
+  const sources: Record<string, string> = {
+    WEBSITE: "Website",
+  };
+
+  return sources[source] ?? source;
+}
