@@ -6,33 +6,55 @@ import { prisma } from "@/lib/prisma";
 import LeadStatusSelect from "@/components/leads/LeadStatusSelect";
 import { formatLeadSource } from "@/lib/property-format";
 import LeadStatusFilter from "@/components/leads/LeadStatusFilter";
+import LeadSearch from "@/components/leads/LeadSearch";
 
 type LeadsPageProps = {
   searchParams: Promise<{
     status?: string;
+    search?: string;
   }>;
 };
 
 export default async function LeadsPage({ searchParams }: LeadsPageProps) {
   const user = await getCurrentUser();
 
-  const { status } = await searchParams;
+  const { status, search } = await searchParams;
 
   if (!user) {
     redirect("/agent/login");
   }
 
   const leads = await prisma.lead.findMany({
-    where: status
-      ? {
-          status: status as
-            | "NEW"
-            | "CONTACTED"
-            | "QUALIFIED"
-            | "CONVERTED"
-            | "LOST",
-        }
-      : undefined,
+    where: {
+      ...(status
+        ? {
+            status: status as
+              | "NEW"
+              | "CONTACTED"
+              | "QUALIFIED"
+              | "CONVERTED"
+              | "LOST",
+          }
+        : {}),
+
+      ...(search
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                phone: {
+                  contains: search,
+                },
+              },
+            ],
+          }
+        : {}),
+    },
 
     orderBy: {
       createdAt: "desc",
@@ -58,7 +80,9 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
           Kelola calon pembeli atau penyewa property.
         </p>
 
-        <div className="mt-6">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <LeadSearch />
+
           <LeadStatusFilter />
         </div>
       </div>
@@ -87,6 +111,7 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                   <th className="px-6 py-4 font-medium">Sumber</th>
 
                   <th className="px-6 py-4 font-medium">Tanggal</th>
+                  <th className="px-6 py-4 text-left">Aksi</th>
                 </tr>
               </thead>
 
@@ -95,10 +120,17 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                   <tr key={lead.id} className="border-b last:border-0">
                     {/* Nama */}
                     <td className="px-6 py-4">
-                      <div className="font-medium">{lead.name}</div>
+                      <a
+                        href={`/dashboard/leads/${lead.id}`}
+                        className="font-medium text-gray-900 hover:underline"
+                      >
+                        {lead.name}
+                      </a>
 
                       {lead.email && (
-                        <div className="mt-1 text-gray-500">{lead.email}</div>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {lead.email}
+                        </p>
                       )}
                     </td>
 
@@ -149,6 +181,14 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                     {/* Tanggal */}
                     <td className="px-6 py-4 text-gray-500">
                       {lead.createdAt.toLocaleDateString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4">
+                      <a
+                        href={`/dashboard/leads/${lead.id}`}
+                        className="text-sm font-medium text-gray-900 hover:underline"
+                      >
+                        Detail
+                      </a>
                     </td>
                   </tr>
                 ))}
