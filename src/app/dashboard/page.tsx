@@ -144,20 +144,6 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      {/* Account Information */}
-      <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">Informasi Akun</h2>
-
-        <div className="mt-4 space-y-2 text-sm text-gray-600">
-          <p>
-            <strong className="text-gray-900">Email:</strong> {user.email}
-          </p>
-
-          <p>
-            <strong className="text-gray-900">Role:</strong> {user.role}
-          </p>
-        </div>
-      </div>
     </section>
   );
 }
