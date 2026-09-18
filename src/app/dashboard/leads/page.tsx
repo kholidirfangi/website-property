@@ -71,7 +71,7 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
   });
 
   return (
-    <section className="p-8">
+    <section className="p-4 md:p-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Leads</h1>
@@ -95,21 +95,15 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full min-w-275 text-left text-sm">
               <thead className="border-b bg-gray-50">
                 <tr>
                   <th className="px-6 py-4 font-medium">Nama</th>
-
                   <th className="px-6 py-4 font-medium">Property</th>
-
                   <th className="px-6 py-4 font-medium">WhatsApp</th>
-
                   <th className="px-6 py-4 font-medium">Pesan</th>
-
                   <th className="px-6 py-4 font-medium">Status</th>
-
                   <th className="px-6 py-4 font-medium">Sumber</th>
-
                   <th className="px-6 py-4 font-medium">Tanggal</th>
                   <th className="px-6 py-4 text-left">Aksi</th>
                 </tr>
@@ -119,7 +113,7 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                 {leads.map((lead) => (
                   <tr key={lead.id} className="border-b last:border-0">
                     {/* Nama */}
-                    <td className="px-6 py-4">
+                    <td className="whitespace-nowrap px-6 py-4">
                       <a
                         href={`/dashboard/leads/${lead.id}`}
                         className="font-medium text-gray-900 hover:underline"
@@ -135,7 +129,7 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                     </td>
 
                     {/* Property */}
-                    <td className="px-6 py-4">
+                    <td className="whitespace-nowrap px-6 py-4">
                       {lead.property ? (
                         lead.property.title
                       ) : (
@@ -144,9 +138,11 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                     </td>
 
                     {/* WhatsApp */}
-                    <td className="px-6 py-4">
+                    <td className="whitespace-nowrap px-6 py-4">
                       <a
-                        href={`https://wa.me/${lead.phone.replace(/\D/g, "").replace(/^0/, "62")}`}
+                        href={`https://wa.me/${lead.phone
+                          .replace(/\D/g, "")
+                          .replace(/^0/, "62")}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-medium text-green-600 hover:underline"
@@ -155,6 +151,7 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                       </a>
                     </td>
 
+                    {/* Pesan */}
                     <td className="max-w-xs px-6 py-4">
                       {lead.message ? (
                         <p
@@ -169,20 +166,22 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                     </td>
 
                     {/* Status */}
-                    <td className="px-6 py-4">
+                    <td className="whitespace-nowrap px-6 py-4">
                       <LeadStatusSelect leadId={lead.id} status={lead.status} />
                     </td>
 
                     {/* Source */}
-                    <td className="px-6 py-4">
+                    <td className="whitespace-nowrap px-6 py-4">
                       {formatLeadSource(lead.source)}
                     </td>
 
                     {/* Tanggal */}
-                    <td className="px-6 py-4 text-gray-500">
+                    <td className="whitespace-nowrap px-6 py-4 text-gray-500">
                       {lead.createdAt.toLocaleDateString("id-ID")}
                     </td>
-                    <td className="px-6 py-4">
+
+                    {/* Aksi */}
+                    <td className="whitespace-nowrap px-6 py-4">
                       <a
                         href={`/dashboard/leads/${lead.id}`}
                         className="text-sm font-medium text-gray-900 hover:underline"

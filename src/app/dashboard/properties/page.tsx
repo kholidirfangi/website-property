@@ -25,8 +25,8 @@ export default async function PropertiesPage() {
   const isSuperAdmin = user.role === "SUPERADMIN";
 
   return (
-    <section className="p-8">
-      <div className="flex items-center justify-between">
+    <section className="p-4 md:p-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Properti</h1>
 
@@ -50,7 +50,7 @@ export default async function PropertiesPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full min-w-[700px] text-left text-sm">
               <thead className="border-b bg-gray-50">
                 <tr>
                   <th className="px-6 py-4 font-medium">Properti</th>
@@ -92,7 +92,7 @@ export default async function PropertiesPage() {
                       {formatListingType(property.listingType)}
                     </td>
 
-                    <td className="px-6 py-4 font-medium">
+                    <td className="whitespace-nowrap px-6 py-4 font-medium">
                       Rp {formatPrice(property.price.toString())}
                     </td>
                   </tr>
