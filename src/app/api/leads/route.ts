@@ -11,6 +11,10 @@ export async function POST(request: Request) {
     const message = String(body.message ?? "").trim();
     const propertyId = String(body.propertyId ?? "").trim();
 
+    // =========================
+    // VALIDASI NAMA
+    // =========================
+
     if (!name) {
       return NextResponse.json(
         {
@@ -21,11 +25,109 @@ export async function POST(request: Request) {
       );
     }
 
+    if (name.length < 2) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Nama minimal 2 karakter.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (name.length > 150) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Nama maksimal 100 karakter.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // =========================
+    // VALIDASI PHONE
+    // =========================
+
     if (!phone) {
       return NextResponse.json(
         {
           success: false,
           message: "Nomor WhatsApp wajib diisi.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (phone.length < 8) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Nomor WhatsApp minimal 8 karakter.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (phone.length > 20) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Nomor WhatsApp maksimal 20 karakter.",
+        },
+        { status: 400 },
+      );
+    }
+
+    const phoneRegex = /^[+]?[0-9]+$/;
+
+    if (!phoneRegex.test(phone)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Nomor WhatsApp hanya boleh berisi angka.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // =========================
+    // VALIDASI EMAIL
+    // =========================
+
+    if (email) {
+      if (email.length > 150) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Email maksimal 150 karakter.",
+          },
+          { status: 400 },
+        );
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Format email tidak valid.",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    // =========================
+    // VALIDASI MESSAGE
+    // =========================
+
+    if (message.length > 1000) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Pesan maksimal 1000 karakter.",
         },
         { status: 400 },
       );
