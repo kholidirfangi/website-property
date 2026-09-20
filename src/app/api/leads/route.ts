@@ -1,8 +1,32 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { leadRateLimit } from "@/lib/ratelimit";
 
 export async function POST(request: Request) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      "unknown";
+
+    const { success, remaining, reset } = await leadRateLimit.limit(ip);
+
+    if (!success) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Terlalu banyak permintaan. Silakan coba lagi nanti.",
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)),
+            "X-RateLimit-Remaining": String(remaining),
+          },
+        },
+      );
+    }
+
     const body = await request.json();
 
     const name = String(body.name ?? "").trim();
