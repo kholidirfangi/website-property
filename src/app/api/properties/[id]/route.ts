@@ -202,6 +202,27 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
+    const textFields = [
+      { value: title, label: "Nama property", max: 150 },
+      { value: city, label: "Kota", max: 100 },
+      { value: address, label: "Alamat", max: 500 },
+      { value: district, label: "Kecamatan", max: 100 },
+      { value: province, label: "Provinsi", max: 100 },
+      { value: postalCode, label: "Kode pos", max: 20 },
+    ];
+
+    for (const field of textFields) {
+      if (field.value.length > field.max) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `${field.label} maksimal ${field.max} karakter.`,
+          },
+          { status: 400 },
+        );
+      }
+    }
+
     if (!Number.isFinite(price) || price <= 0) {
       return NextResponse.json(
         {

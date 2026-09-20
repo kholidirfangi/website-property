@@ -456,7 +456,7 @@ export default function EditPropertyForm({ property }: EditPropertyFormProps) {
               onChange={(event) => setBedrooms(event.target.value)}
               className="mt-2 w-full rounded-lg border px-4 py-2"
               min="0"
-              step="1"
+              step="any"
               disabled={loading}
             />
           </div>

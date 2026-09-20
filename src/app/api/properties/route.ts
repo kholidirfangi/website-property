@@ -139,7 +139,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             success: false,
-            message: `${field.label} tidak valid`,
+            message: `${field.label} harus berupa angka yang valid.`,
           },
           { status: 400 },
         );
@@ -149,7 +149,10 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             success: false,
-            message: `${field.label} tidak valid`,
+            message:
+              field.min === 0
+                ? `${field.label} tidak boleh kurang dari 0.`
+                : `${field.label} harus minimal ${field.min}.`,
           },
           { status: 400 },
         );
@@ -202,6 +205,31 @@ export async function POST(request: Request) {
         },
         { status: 400 },
       );
+    }
+
+    // =========================
+    // VALIDASI TEXT
+    // =========================
+
+    const textFields = [
+      { value: title, label: "Nama property", max: 150 },
+      { value: city, label: "Kota", max: 100 },
+      { value: address, label: "Alamat", max: 500 },
+      { value: district, label: "Kecamatan", max: 100 },
+      { value: province, label: "Provinsi", max: 100 },
+      { value: postalCode, label: "Kode pos", max: 20 },
+    ];
+
+    for (const field of textFields) {
+      if (field.value.length > field.max) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `${field.label} maksimal ${field.max} karakter.`,
+          },
+          { status: 400 },
+        );
+      }
     }
 
     // =========================

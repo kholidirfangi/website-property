@@ -67,11 +67,13 @@ export async function POST(request: Request, { params }: RouteContext) {
     }
 
     // Validasi tipe file
-    if (!file.type.startsWith("image/")) {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
         {
           success: false,
-          message: "File harus berupa gambar",
+          message: "Format gambar harus JPG, PNG, atau WebP.",
         },
         { status: 400 },
       );

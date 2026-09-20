@@ -70,10 +70,7 @@ export async function DELETE(
         })
       : null;
 
-    // Hapus file dari Cloudinary
-    await cloudinary.uploader.destroy(image.publicId);
-
-    // Hapus data dari database
+        // Hapus data dari database
     await prisma.$transaction(async (tx) => {
       await tx.propertyImage.delete({
         where: {
@@ -92,6 +89,9 @@ export async function DELETE(
         });
       }
     });
+
+    // Hapus file dari Cloudinary
+    await cloudinary.uploader.destroy(image.publicId);
 
     return NextResponse.json({
       success: true,
