@@ -24,9 +24,7 @@ type EditPropertyFormProps = {
   };
 };
 
-export default function EditPropertyForm({
-  property,
-}: EditPropertyFormProps) {
+export default function EditPropertyForm({ property }: EditPropertyFormProps) {
   const router = useRouter();
 
   const [title, setTitle] = useState(property.title);
@@ -41,15 +39,11 @@ export default function EditPropertyForm({
   const [province, setProvince] = useState(property.province ?? "");
   const [postalCode, setPostalCode] = useState(property.postalCode ?? "");
 
-  const [landArea, setLandArea] = useState(
-    property.landArea?.toString() ?? "",
-  );
+  const [landArea, setLandArea] = useState(property.landArea?.toString() ?? "");
   const [buildingArea, setBuildingArea] = useState(
     property.buildingArea?.toString() ?? "",
   );
-  const [bedrooms, setBedrooms] = useState(
-    property.bedrooms?.toString() ?? "",
-  );
+  const [bedrooms, setBedrooms] = useState(property.bedrooms?.toString() ?? "");
   const [bathrooms, setBathrooms] = useState(
     property.bathrooms?.toString() ?? "",
   );
@@ -70,6 +64,12 @@ export default function EditPropertyForm({
 
     if (!trimmedTitle) {
       setError("Nama properti wajib diisi.");
+      setLoading(false);
+      return;
+    }
+
+    if (trimmedTitle.length < 3) {
+      setError("Nama properti minimal 3 karakter.");
       setLoading(false);
       return;
     }
@@ -104,6 +104,73 @@ export default function EditPropertyForm({
       return;
     }
 
+    const numericFields = [
+      {
+        value: landArea,
+        label: "Luas tanah",
+        min: 0,
+        integer: false,
+      },
+      {
+        value: buildingArea,
+        label: "Luas bangunan",
+        min: 0,
+        integer: false,
+      },
+      {
+        value: bedrooms,
+        label: "Kamar tidur",
+        min: 0,
+        integer: true,
+      },
+      {
+        value: bathrooms,
+        label: "Kamar mandi",
+        min: 0,
+        integer: true,
+      },
+      {
+        value: floors,
+        label: "Jumlah lantai",
+        min: 1,
+        integer: true,
+      },
+    ];
+
+    for (const field of numericFields) {
+      if (field.value.trim() === "") {
+        continue;
+      }
+
+      const value = Number(field.value);
+
+      if (!Number.isFinite(value)) {
+        setError(`${field.label} harus berupa angka yang valid.`);
+        setLoading(false);
+        return;
+      }
+
+      if (value < field.min) {
+        setError(
+          field.min === 0
+            ? `${field.label} tidak boleh kurang dari 0.`
+            : `${field.label} harus minimal ${field.min}.`,
+        );
+        setLoading(false);
+        return;
+      }
+
+      if (field.integer && !Number.isInteger(value)) {
+        setError(`${field.label} harus berupa bilangan bulat.`);
+        setLoading(false);
+        return;
+      }
+    }
+
+    const parseOptionalNumber = (value: string) => {
+      return value.trim() === "" ? null : Number(value);
+    };
+
     try {
       const response = await fetch(`/api/properties/${property.id}`, {
         method: "PUT",
@@ -123,11 +190,11 @@ export default function EditPropertyForm({
           province: province.trim(),
           postalCode: postalCode.trim(),
 
-          landArea,
-          buildingArea,
-          bedrooms,
-          bathrooms,
-          floors,
+          landArea: parseOptionalNumber(landArea),
+          buildingArea: parseOptionalNumber(buildingArea),
+          bedrooms: parseOptionalNumber(bedrooms),
+          bathrooms: parseOptionalNumber(bathrooms),
+          floors: parseOptionalNumber(floors),
         }),
       });
 
@@ -361,10 +428,7 @@ export default function EditPropertyForm({
           </div>
 
           <div>
-            <label
-              htmlFor="buildingArea"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="buildingArea" className="block text-sm font-medium">
               Luas Bangunan (m²)
             </label>
 
@@ -425,7 +489,7 @@ export default function EditPropertyForm({
               value={floors}
               onChange={(event) => setFloors(event.target.value)}
               className="mt-2 w-full rounded-lg border px-4 py-2"
-              min="0"
+              min="1"
               step="1"
               disabled={loading}
             />

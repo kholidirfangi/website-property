@@ -92,12 +92,147 @@ export async function PUT(request: Request, { params }: RouteContext) {
         ? Number(body.floors)
         : null;
 
+    const numericFields = [
+      {
+        value: landArea,
+        label: "Luas tanah",
+        min: 0,
+      },
+      {
+        value: buildingArea,
+        label: "Luas bangunan",
+        min: 0,
+      },
+      {
+        value: bedrooms,
+        label: "Jumlah kamar tidur",
+        min: 0,
+        integer: true,
+      },
+      {
+        value: bathrooms,
+        label: "Jumlah kamar mandi",
+        min: 0,
+        integer: true,
+      },
+      {
+        value: floors,
+        label: "Jumlah lantai",
+        min: 1,
+        integer: true,
+      },
+    ];
+
+    for (const field of numericFields) {
+      if (field.value === null) {
+        continue;
+      }
+
+      if (!Number.isFinite(field.value)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `${field.label} harus berupa angka yang valid.`,
+          },
+          { status: 400 },
+        );
+      }
+
+      if (field.value < field.min) {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              field.min === 0
+                ? `${field.label} tidak boleh kurang dari 0.`
+                : `${field.label} harus minimal ${field.min}.`,
+          },
+          { status: 400 },
+        );
+      }
+
+      if (field.value < field.min) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `${field.label} tidak valid`,
+          },
+          { status: 400 },
+        );
+      }
+
+      if (field.integer && !Number.isInteger(field.value)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `${field.label} harus berupa bilangan bulat`,
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    if (!title) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Judul property wajib diisi.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (title.length < 3) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Judul property minimal 3 karakter.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!city) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Kota wajib diisi.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!Number.isFinite(price) || price <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Harga property harus lebih dari 0.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!validTypes.includes(type as (typeof validTypes)[number])) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Tipe property tidak valid.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!validStatuses.includes(status as (typeof validStatuses)[number])) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Status property tidak valid.",
+        },
+        { status: 400 },
+      );
+    }
+
     if (
-      !title ||
-      !city ||
-      !Number.isFinite(price) ||
-      !validTypes.includes(type as (typeof validTypes)[number]) ||
-      !validStatuses.includes(status as (typeof validStatuses)[number]) ||
       !validListingTypes.includes(
         listingType as (typeof validListingTypes)[number],
       )
@@ -105,7 +240,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
       return NextResponse.json(
         {
           success: false,
-          message: "Data property tidak valid",
+          message: "Jenis listing tidak valid.",
         },
         { status: 400 },
       );

@@ -96,6 +96,77 @@ export async function POST(request: Request) {
         : null;
 
     // =========================
+    // VALIDASI ANGKA TAMBAHAN
+    // =========================
+
+    const numericFields = [
+      {
+        value: landArea,
+        label: "Luas tanah",
+        min: 0,
+      },
+      {
+        value: buildingArea,
+        label: "Luas bangunan",
+        min: 0,
+      },
+      {
+        value: bedrooms,
+        label: "Jumlah kamar tidur",
+        min: 0,
+        integer: true,
+      },
+      {
+        value: bathrooms,
+        label: "Jumlah kamar mandi",
+        min: 0,
+        integer: true,
+      },
+      {
+        value: floors,
+        label: "Jumlah lantai",
+        min: 1,
+        integer: true,
+      },
+    ];
+
+    for (const field of numericFields) {
+      if (field.value === null) {
+        continue;
+      }
+
+      if (!Number.isFinite(field.value)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `${field.label} tidak valid`,
+          },
+          { status: 400 },
+        );
+      }
+
+      if (field.value < field.min) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `${field.label} tidak valid`,
+          },
+          { status: 400 },
+        );
+      }
+
+      if (field.integer && !Number.isInteger(field.value)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `${field.label} harus berupa bilangan bulat`,
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    // =========================
     // VALIDASI TITLE
     // =========================
 
