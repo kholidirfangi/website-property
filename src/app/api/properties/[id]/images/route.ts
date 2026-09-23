@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/current-user";
 import { prisma } from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
+import { imageUploadRateLimit } from "@/lib/ratelimit";
 
 type RouteContext = {
   params: Promise<{
@@ -32,12 +33,41 @@ export async function POST(request: Request, { params }: RouteContext) {
     );
   }
 
+  // =========================
+  // RATE LIMIT UPLOAD
+  // =========================
+
+  const { success, remaining, reset } =
+    await imageUploadRateLimit.limit(`image-upload:${user.id}`);
+
+  if (!success) {
+    return NextResponse.json(
+      {
+        success: false,
+        message:
+          "Terlalu banyak upload gambar. Silakan coba lagi nanti.",
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(
+            Math.max(0, Math.ceil((reset - Date.now()) / 1000)),
+          ),
+          "X-RateLimit-Remaining": String(remaining),
+        },
+      },
+    );
+  }
+
   let uploadedPublicId: string | null = null;
 
   try {
     const { id } = await params;
 
-    // Pastikan property tersedia
+    // =========================
+    // CEK PROPERTY
+    // =========================
+
     const property = await prisma.property.findUnique({
       where: {
         id,
@@ -54,7 +84,10 @@ export async function POST(request: Request, { params }: RouteContext) {
       );
     }
 
-    // Ambil file dari FormData
+    // =========================
+    // AMBIL FILE
+    // =========================
+
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -68,8 +101,15 @@ export async function POST(request: Request, { params }: RouteContext) {
       );
     }
 
-    // Validasi tipe file
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    // =========================
+    // VALIDASI TIPE FILE
+    // =========================
+
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
 
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
@@ -81,24 +121,34 @@ export async function POST(request: Request, { params }: RouteContext) {
       );
     }
 
-    // Maksimal 10 MB
+    // =========================
+    // VALIDASI UKURAN FILE
+    // =========================
+
     const maxFileSize = 10 * 1024 * 1024;
 
     if (file.size > maxFileSize) {
       return NextResponse.json(
         {
           success: false,
-          message: "Ukuran gambar terlalu besar. Maksimal 10 MB.",
+          message:
+            "Ukuran gambar terlalu besar. Maksimal 10 MB.",
         },
         { status: 400 },
       );
     }
 
-    // Konversi File → Buffer
+    // =========================
+    // KONVERSI FILE → BUFFER
+    // =========================
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload ke Cloudinary
+    // =========================
+    // UPLOAD CLOUDINARY
+    // =========================
+
     const uploadResult = await new Promise<{
       secure_url: string;
       public_id: string;
@@ -141,17 +191,23 @@ export async function POST(request: Request, { params }: RouteContext) {
     // Simpan public_id untuk kebutuhan cleanup
     uploadedPublicId = uploadResult.public_id;
 
-    // Cek apakah property sudah memiliki gambar
+    // =========================
+    // CEK GAMBAR PROPERTY
+    // =========================
+
     const imageCount = await prisma.propertyImage.count({
       where: {
         propertyId: id,
       },
     });
 
-    // Jika ini gambar pertama → jadikan primary
+    // Jika gambar pertama → jadikan primary
     const isPrimary = imageCount === 0;
 
-    // Simpan ke database
+    // =========================
+    // SIMPAN KE DATABASE
+    // =========================
+
     const image = await prisma.propertyImage.create({
       data: {
         propertyId: id,
@@ -170,13 +226,20 @@ export async function POST(request: Request, { params }: RouteContext) {
         message: "Gambar berhasil diupload",
         data: image,
       },
-      { status: 201 },
+      {
+        status: 201,
+        headers: {
+          "X-RateLimit-Remaining": String(remaining),
+        },
+      },
     );
   } catch (error) {
     console.error("UPLOAD PROPERTY IMAGE ERROR:", error);
 
-    // Jika Cloudinary berhasil upload tetapi database gagal,
-    // hapus kembali gambar dari Cloudinary.
+    // =========================
+    // CLEANUP CLOUDINARY
+    // =========================
+
     if (uploadedPublicId) {
       try {
         await cloudinary.uploader.destroy(uploadedPublicId);
