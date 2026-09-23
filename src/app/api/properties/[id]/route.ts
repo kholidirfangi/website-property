@@ -151,16 +151,6 @@ export async function PUT(request: Request, { params }: RouteContext) {
         );
       }
 
-      if (field.value < field.min) {
-        return NextResponse.json(
-          {
-            success: false,
-            message: `${field.label} tidak valid`,
-          },
-          { status: 400 },
-        );
-      }
-
       if (field.integer && !Number.isInteger(field.value)) {
         return NextResponse.json(
           {
@@ -367,11 +357,22 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       );
     }
 
-    await prisma.property.delete({
-      where: {
-        id,
-      },
-    });
+    await prisma.$transaction([
+      prisma.lead.updateMany({
+        where: {
+          propertyId: id,
+        },
+        data: {
+          propertyId: null,
+        },
+      }),
+
+      prisma.property.delete({
+        where: {
+          id,
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       success: true,
