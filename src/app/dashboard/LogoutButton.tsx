@@ -11,13 +11,18 @@ export default function LogoutButton() {
     setLoading(true);
 
     try {
-      await fetch("/api/auth/logout", {
+      const response = await fetch("/api/auth/logout", {
         method: "POST",
       });
 
+      if (!response.ok) {
+        throw new Error("Logout gagal");
+      }
+
       router.push("/agent/login");
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("LOGOUT ERROR:", error);
       setLoading(false);
     }
   }

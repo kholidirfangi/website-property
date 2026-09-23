@@ -4,10 +4,8 @@ import { getCurrentUser } from "@/lib/current-user";
 import { prisma } from "@/lib/prisma";
 
 import LeadStatusSelect from "@/components/leads/LeadStatusSelect";
-import {
-  formatLeadSource,
-  formatPrice,
-} from "@/lib/property-format";
+import { formatLeadSource, formatPrice } from "@/lib/property-format";
+import Link from "next/link";
 
 type LeadDetailPageProps = {
   params: Promise<{
@@ -15,9 +13,7 @@ type LeadDetailPageProps = {
   }>;
 };
 
-export default async function LeadDetailPage({
-  params,
-}: LeadDetailPageProps) {
+export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -35,7 +31,6 @@ export default async function LeadDetailPage({
         select: {
           id: true,
           title: true,
-          slug: true,
           price: true,
         },
       },
@@ -50,12 +45,12 @@ export default async function LeadDetailPage({
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
-        <a
+        <Link
           href="/dashboard/leads"
           className="text-sm text-gray-500 hover:text-gray-900"
         >
           ← Kembali ke Leads
-        </a>
+        </Link>
 
         <h1 className="mt-3 text-2xl font-semibold text-gray-900">
           Detail Lead
@@ -72,9 +67,7 @@ export default async function LeadDetailPage({
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <p className="text-sm text-gray-500">Nama</p>
-              <p className="mt-1 font-medium text-gray-900">
-                {lead.name}
-              </p>
+              <p className="mt-1 font-medium text-gray-900">{lead.name}</p>
             </div>
 
             <div>
@@ -117,9 +110,7 @@ export default async function LeadDetailPage({
                   {lead.message}
                 </p>
               ) : (
-                <p className="text-sm text-gray-400">
-                  Tidak ada pesan.
-                </p>
+                <p className="text-sm text-gray-400">Tidak ada pesan.</p>
               )}
             </div>
           </div>
@@ -129,14 +120,9 @@ export default async function LeadDetailPage({
         <div className="space-y-6">
           {/* Status */}
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="mb-5 text-lg font-semibold text-gray-900">
-              Status
-            </h2>
+            <h2 className="mb-5 text-lg font-semibold text-gray-900">Status</h2>
 
-            <LeadStatusSelect
-              leadId={lead.id}
-              status={lead.status}
-            />
+            <LeadStatusSelect leadId={lead.id} status={lead.status} />
           </div>
 
           {/* Property */}
@@ -163,9 +149,7 @@ export default async function LeadDetailPage({
                 </a>
               </div>
             ) : (
-              <p className="text-sm text-gray-400">
-                General Inquiry
-              </p>
+              <p className="text-sm text-gray-400">General Inquiry</p>
             )}
           </div>
 

@@ -15,25 +15,34 @@ type LeadsPageProps = {
   }>;
 };
 
+const VALID_STATUSES = [
+  "NEW",
+  "CONTACTED",
+  "QUALIFIED",
+  "CONVERTED",
+  "LOST",
+] as const;
+
 export default async function LeadsPage({ searchParams }: LeadsPageProps) {
   const user = await getCurrentUser();
-
-  const { status, search } = await searchParams;
 
   if (!user) {
     redirect("/agent/login");
   }
 
+  const { status, search } = await searchParams;
+
+  const validStatus = VALID_STATUSES.includes(
+    status as (typeof VALID_STATUSES)[number],
+  )
+    ? status
+    : undefined;
+
   const leads = await prisma.lead.findMany({
     where: {
-      ...(status
+      ...(validStatus
         ? {
-            status: status as
-              | "NEW"
-              | "CONTACTED"
-              | "QUALIFIED"
-              | "CONVERTED"
-              | "LOST",
+            status: validStatus as (typeof VALID_STATUSES)[number],
           }
         : {}),
 
