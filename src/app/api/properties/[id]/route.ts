@@ -21,6 +21,15 @@ const validStatuses = ["AVAILABLE", "SOLD", "RENTED"] as const;
 
 const validListingTypes = ["SALE", "RENT"] as const;
 
+function createSlug(title: string) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export async function PUT(request: Request, { params }: RouteContext) {
   const user = await getCurrentUser();
 
@@ -155,12 +164,16 @@ export async function PUT(request: Request, { params }: RouteContext) {
         return NextResponse.json(
           {
             success: false,
-            message: `${field.label} harus berupa bilangan bulat`,
+            message: `${field.label} harus berupa bilangan bulat.`,
           },
           { status: 400 },
         );
       }
     }
+
+    // =========================
+    // VALIDASI TITLE
+    // =========================
 
     if (!title) {
       return NextResponse.json(
@@ -182,6 +195,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
+    // =========================
+    // VALIDASI CITY
+    // =========================
+
     if (!city) {
       return NextResponse.json(
         {
@@ -191,6 +208,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
         { status: 400 },
       );
     }
+
+    // =========================
+    // VALIDASI TEXT
+    // =========================
 
     const textFields = [
       { value: title, label: "Nama property", max: 150 },
@@ -213,6 +234,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
       }
     }
 
+    // =========================
+    // VALIDASI PRICE
+    // =========================
+
     if (!Number.isFinite(price) || price <= 0) {
       return NextResponse.json(
         {
@@ -222,6 +247,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
         { status: 400 },
       );
     }
+
+    // =========================
+    // VALIDASI TYPE
+    // =========================
 
     if (!validTypes.includes(type as (typeof validTypes)[number])) {
       return NextResponse.json(
@@ -233,6 +262,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
+    // =========================
+    // VALIDASI STATUS
+    // =========================
+
     if (!validStatuses.includes(status as (typeof validStatuses)[number])) {
       return NextResponse.json(
         {
@@ -242,6 +275,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
         { status: 400 },
       );
     }
+
+    // =========================
+    // VALIDASI LISTING TYPE
+    // =========================
 
     if (
       !validListingTypes.includes(
@@ -257,6 +294,26 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
+    // =========================
+    // CREATE SLUG
+    // =========================
+
+    const slug = createSlug(title);
+
+    if (!slug) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Judul property tidak dapat digunakan sebagai slug.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // =========================
+    // CEK PROPERTY
+    // =========================
+
     const property = await prisma.property.findUnique({
       where: {
         id,
@@ -267,11 +324,38 @@ export async function PUT(request: Request, { params }: RouteContext) {
       return NextResponse.json(
         {
           success: false,
-          message: "Property tidak ditemukan",
+          message: "Property tidak ditemukan.",
         },
         { status: 404 },
       );
     }
+
+    // =========================
+    // CEK SLUG DUPLIKAT
+    // =========================
+
+    const existingProperty = await prisma.property.findFirst({
+      where: {
+        slug,
+        NOT: {
+          id,
+        },
+      },
+    });
+
+    if (existingProperty) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Property dengan nama tersebut sudah ada.",
+        },
+        { status: 409 },
+      );
+    }
+
+    // =========================
+    // UPDATE PROPERTY
+    // =========================
 
     const updatedProperty = await prisma.property.update({
       where: {
@@ -279,6 +363,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
       },
       data: {
         title,
+        slug,
         type: type as (typeof validTypes)[number],
         city,
         price,
@@ -308,14 +393,14 @@ export async function PUT(request: Request, { params }: RouteContext) {
     return NextResponse.json(
       {
         success: false,
-        message: "Gagal mengupdate property",
+        message: "Gagal mengupdate property.",
       },
       { status: 500 },
     );
   }
 }
 
-export async function DELETE(request: Request, { params }: RouteContext) {
+export async function DELETE(_request: Request, { params }: RouteContext) {
   const user = await getCurrentUser();
 
   if (!user) {
