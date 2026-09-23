@@ -10,10 +10,7 @@ type RouteContext = {
   }>;
 };
 
-export async function DELETE(
-  _request: Request,
-  { params }: RouteContext,
-) {
+export async function DELETE(_request: Request, { params }: RouteContext) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -70,7 +67,7 @@ export async function DELETE(
         })
       : null;
 
-        // Hapus data dari database
+    // Hapus data dari database
     await prisma.$transaction(async (tx) => {
       await tx.propertyImage.delete({
         where: {
@@ -91,7 +88,11 @@ export async function DELETE(
     });
 
     // Hapus file dari Cloudinary
-    await cloudinary.uploader.destroy(image.publicId);
+    try {
+      await cloudinary.uploader.destroy(image.publicId);
+    } catch (cloudinaryError) {
+      console.error("CLOUDINARY DELETE ERROR:", cloudinaryError);
+    }
 
     return NextResponse.json({
       success: true,
