@@ -32,6 +32,8 @@ export async function POST(request: Request, { params }: RouteContext) {
     );
   }
 
+  let uploadedPublicId: string | null = null;
+
   try {
     const { id } = await params;
 
@@ -136,6 +138,9 @@ export async function POST(request: Request, { params }: RouteContext) {
       uploadStream.end(buffer);
     });
 
+    // Simpan public_id untuk kebutuhan cleanup
+    uploadedPublicId = uploadResult.public_id;
+
     // Cek apakah property sudah memiliki gambar
     const imageCount = await prisma.propertyImage.count({
       where: {
@@ -156,6 +161,9 @@ export async function POST(request: Request, { params }: RouteContext) {
       },
     });
 
+    // Database berhasil → tidak perlu cleanup Cloudinary
+    uploadedPublicId = null;
+
     return NextResponse.json(
       {
         success: true,
@@ -166,6 +174,19 @@ export async function POST(request: Request, { params }: RouteContext) {
     );
   } catch (error) {
     console.error("UPLOAD PROPERTY IMAGE ERROR:", error);
+
+    // Jika Cloudinary berhasil upload tetapi database gagal,
+    // hapus kembali gambar dari Cloudinary.
+    if (uploadedPublicId) {
+      try {
+        await cloudinary.uploader.destroy(uploadedPublicId);
+      } catch (cleanupError) {
+        console.error(
+          "CLOUDINARY CLEANUP ERROR:",
+          cleanupError,
+        );
+      }
+    }
 
     return NextResponse.json(
       {
