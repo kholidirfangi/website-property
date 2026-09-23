@@ -36,7 +36,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Login gagal");
+        setError(data.message || "Login gagal");
         return;
       }
 
