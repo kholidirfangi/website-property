@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 type PropertyImage = {
   id: string;
   url: string;
-  publicId: string;
   isPrimary: boolean;
 };
 

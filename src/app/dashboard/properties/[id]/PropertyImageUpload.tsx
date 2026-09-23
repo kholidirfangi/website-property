@@ -86,8 +86,10 @@ export default function PropertyImageUpload({
   }
 
   async function uploadImage(file: File) {
-    if (!file.type.startsWith("image/")) {
-      throw new Error(`"${file.name}" bukan file gambar.`);
+    const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      throw new Error(`"${file.name}" harus berupa JPG, PNG, atau WebP.`);
     }
 
     if (file.size > MAX_FILE_SIZE) {

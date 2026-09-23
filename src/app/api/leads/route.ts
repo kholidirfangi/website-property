@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          message: "Nama maksimal 100 karakter.",
+          message: "Nama maksimal 150 karakter.",
         },
         { status: 400 },
       );
