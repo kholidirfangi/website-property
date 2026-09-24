@@ -10,6 +10,8 @@ import {
 } from "@/lib/property-format";
 import PropertyInquiryForm from "@/components/property/PropertyInquiryForm";
 import PropertyGallery from "@/components/property/PropertyGallery";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 type PropertyPageProps = {
   params: Promise<{
@@ -39,7 +41,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-6xl px-6 py-8">
+      <Navbar />
+      <div className="mt-10 mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
         <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">
           ← Kembali ke Home
         </Link>
@@ -73,7 +76,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             {property.district ? `, ${property.district}` : ""}
           </p>
 
-          <p className="mt-5 text-2xl font-bold">
+          <p className="mt-5 text-2xl font-bold sm:text-3xl">
             Rp {formatPrice(property.price.toString())}
           </p>
         </div>
@@ -187,6 +190,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </aside>
         </div>
       </div>
+
+      <Footer />
     </main>
   );
 }

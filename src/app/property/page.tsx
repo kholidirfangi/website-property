@@ -8,6 +8,8 @@ import {
   formatPropertyType,
 } from "@/lib/property-format";
 import Image from "next/image";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default async function PropertyPage() {
   const properties = await prisma.property.findMany({
@@ -26,13 +28,15 @@ export default async function PropertyPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-6xl px-6 py-12">
+      <Navbar />
+
+      <div className="mt-10 mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         {/* Header */}
         <div>
           <p className="text-sm font-medium text-gray-500">Properti</p>
 
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Temukan Properti Impian Anda
+          <h1 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+            Temukan Properti
           </h1>
 
           <p className="mt-3 max-w-2xl text-gray-600">
@@ -42,7 +46,7 @@ export default async function PropertyPage() {
 
         {/* Property Grid */}
         {properties.length > 0 ? (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {properties.map((property) => {
               const primaryImage = property.images[0];
 
@@ -50,7 +54,7 @@ export default async function PropertyPage() {
                 <Link
                   key={property.id}
                   href={`/property/${property.slug}`}
-                  className="group overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                  className="group overflow-hidden rounded-2xl border border-gray-100 bg-white transition hover:-translate-y-1 hover:shadow-md"
                 >
                   {/* Image */}
                   <div className="relative aspect-4/3 overflow-hidden bg-gray-200">
@@ -131,6 +135,7 @@ export default async function PropertyPage() {
           </div>
         )}
       </div>
+      <Footer />
     </main>
   );
 }
