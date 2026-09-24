@@ -12,6 +12,7 @@ export default function PropertyForm() {
   const [price, setPrice] = useState("");
   const [status, setStatus] = useState("");
   const [listingType, setListingType] = useState("");
+  const [description, setDescription] = useState("");
 
   const [address, setAddress] = useState("");
   const [district, setDistrict] = useState("");
@@ -100,6 +101,7 @@ export default function PropertyForm() {
           price: numericPrice,
           status,
           listingType,
+          description: description.trim(),
 
           address: address.trim(),
           district: district.trim(),
@@ -261,6 +263,24 @@ export default function PropertyForm() {
 
           <option value="RENT">Rent</option>
         </select>
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="description" className="block text-sm font-medium">
+          Deskripsi
+        </label>
+
+        <textarea
+          id="description"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          rows={6}
+          placeholder="Jelaskan detail properti, kondisi, fasilitas, lingkungan sekitar, dan informasi lainnya..."
+          className="w-full rounded-lg border px-4 py-3"
+          disabled={loading}
+        />
+
+        <p className="text-xs text-gray-500">Maksimal 3000 karakter.</p>
       </div>
 
       <div className="space-y-6 rounded-xl border p-6">

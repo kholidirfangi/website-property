@@ -21,6 +21,7 @@ type EditPropertyFormProps = {
     bedrooms: number | null;
     bathrooms: number | null;
     floors: number | null;
+    description: string | null;
   };
 };
 
@@ -33,6 +34,7 @@ export default function EditPropertyForm({ property }: EditPropertyFormProps) {
   const [price, setPrice] = useState(property.price);
   const [status, setStatus] = useState(property.status);
   const [listingType, setListingType] = useState(property.listingType);
+  const [description, setDescription] = useState(property.description ?? "");
 
   const [address, setAddress] = useState(property.address ?? "");
   const [district, setDistrict] = useState(property.district ?? "");
@@ -184,6 +186,7 @@ export default function EditPropertyForm({ property }: EditPropertyFormProps) {
           price: numericPrice,
           status,
           listingType,
+          description: description.trim(),
 
           address: address.trim(),
           district: district.trim(),
@@ -335,6 +338,25 @@ export default function EditPropertyForm({ property }: EditPropertyFormProps) {
           <option value="SALE">Sale</option>
           <option value="RENT">Rent</option>
         </select>
+      </div>
+
+      <div className="space-y-2">
+        <label
+          htmlFor="description"
+          className="text-sm font-medium text-gray-700"
+        >
+          Deskripsi
+        </label>
+
+        <textarea
+          id="description"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          rows={6}
+          placeholder="Jelaskan detail properti..."
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-gray-950 focus:ring-1 focus:ring-gray-950"
+          disabled={loading}
+        />
       </div>
 
       {/* Lokasi */}

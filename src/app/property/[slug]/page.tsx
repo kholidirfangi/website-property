@@ -48,7 +48,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </Link>
 
         {/* Gallery */}
-        <div className="mt-6">
+        <div className="mt-6 overflow-hidden rounded-2xl">
           <PropertyGallery
             images={property.images}
             propertyTitle={property.title}
@@ -71,14 +71,18 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             {property.title}
           </h1>
 
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 sm:text-base">
             {property.city || "-"}
             {property.district ? `, ${property.district}` : ""}
           </p>
 
-          <p className="mt-5 text-2xl font-bold sm:text-3xl">
-            Rp {formatPrice(property.price.toString())}
-          </p>
+          <div className="mt-5">
+            <p className="text-sm text-gray-500">Harga</p>
+
+            <p className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+              Rp {formatPrice(property.price.toString())}
+            </p>
+          </div>
         </div>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">

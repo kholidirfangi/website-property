@@ -175,6 +175,16 @@ export default async function PropertyDetailPage({
                 <p className="text-sm text-gray-500">Kode Pos</p>
                 <p className="mt-1 font-medium">{property.postalCode || "-"}</p>
               </div>
+
+              {property.description && (
+                <div className="mt-8 border-t pt-6">
+                  <h3 className="text-base font-semibold">Deskripsi</h3>
+
+                  <p className="mt-4 whitespace-pre-line text-sm leading-7 text-gray-600">
+                    {property.description}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

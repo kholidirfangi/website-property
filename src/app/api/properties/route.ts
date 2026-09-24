@@ -61,6 +61,8 @@ export async function POST(request: Request) {
     const district = String(body.district ?? "").trim();
     const province = String(body.province ?? "").trim();
     const postalCode = String(body.postalCode ?? "").trim();
+    const description = String(body.description ?? "").trim();
+    console.log("CREATE DESCRIPTION:", description);
 
     const landArea =
       body.landArea !== null &&
@@ -214,6 +216,7 @@ export async function POST(request: Request) {
     const textFields = [
       { value: title, label: "Nama property", max: 150 },
       { value: city, label: "Kota", max: 100 },
+      { value: description, label: "Deskripsi", max: 3000 },
       { value: address, label: "Alamat", max: 500 },
       { value: district, label: "Kecamatan", max: 100 },
       { value: province, label: "Provinsi", max: 100 },
@@ -351,6 +354,7 @@ export async function POST(request: Request) {
         price,
         status: status as (typeof PROPERTY_STATUSES)[number],
         listingType: listingType as (typeof LISTING_TYPES)[number],
+        description,
 
         address,
         district,

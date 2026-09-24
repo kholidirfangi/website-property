@@ -63,6 +63,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
     const price = Number(body.price);
     const status = String(body.status ?? "").trim();
     const listingType = String(body.listingType ?? "").trim();
+    const description = String(body.description ?? "").trim();
     const address = String(body.address ?? "").trim();
     const district = String(body.district ?? "").trim();
     const province = String(body.province ?? "").trim();
@@ -216,6 +217,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
     const textFields = [
       { value: title, label: "Nama property", max: 150 },
       { value: city, label: "Kota", max: 100 },
+      { value: description, label: "Deskripsi", max: 3000 },
       { value: address, label: "Alamat", max: 500 },
       { value: district, label: "Kecamatan", max: 100 },
       { value: province, label: "Provinsi", max: 100 },
@@ -369,6 +371,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
         price,
         status: status as (typeof validStatuses)[number],
         listingType: listingType as (typeof validListingTypes)[number],
+        description,
 
         address,
         district,
