@@ -50,7 +50,7 @@ export default async function PropertiesPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px] text-left text-sm">
+            <table className="w-full min-w-175 text-left text-sm">
               <thead className="border-b bg-gray-50">
                 <tr>
                   <th className="px-6 py-4 font-medium">Properti</th>

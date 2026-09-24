@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 
 import { prisma } from "@/lib/prisma";
@@ -10,6 +9,7 @@ import {
   formatPropertyType,
 } from "@/lib/property-format";
 import PropertyInquiryForm from "@/components/property/PropertyInquiryForm";
+import PropertyGallery from "@/components/property/PropertyGallery";
 
 type PropertyPageProps = {
   params: Promise<{
@@ -37,9 +37,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     notFound();
   }
 
-  const primaryImage =
-    property.images.find((image) => image.isPrimary) ?? property.images[0];
-
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-6 py-8">
@@ -49,22 +46,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
         {/* Gallery */}
         <div className="mt-6">
-          {primaryImage ? (
-            <div className="relative aspect-video overflow-hidden rounded-2xl bg-gray-200">
-              <Image
-                src={primaryImage.url}
-                alt={property.title}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 1200px"
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <div className="flex aspect-video items-center justify-center rounded-2xl bg-gray-200 text-gray-500">
-              Belum ada gambar
-            </div>
-          )}
+          <PropertyGallery
+            images={property.images}
+            propertyTitle={property.title}
+          />
         </div>
 
         {/* Header */}
