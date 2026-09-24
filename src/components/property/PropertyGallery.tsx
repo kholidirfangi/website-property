@@ -37,14 +37,33 @@ export default function PropertyGallery({
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsLightboxOpen(false);
+        return;
       }
 
-      if (event.key === "ArrowLeft" && images.length > 1) {
-        showPreviousImage();
+      if (images.length <= 1) {
+        return;
       }
 
-      if (event.key === "ArrowRight" && images.length > 1) {
-        showNextImage();
+      const currentIndex = images.findIndex(
+        (image) => image.id === selectedImage?.id,
+      );
+
+      if (currentIndex === -1) {
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        const previousIndex =
+          currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+
+        setSelectedImageId(images[previousIndex].id);
+      }
+
+      if (event.key === "ArrowRight") {
+        const nextIndex =
+          currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+
+        setSelectedImageId(images[nextIndex].id);
       }
     }
 
@@ -53,7 +72,7 @@ export default function PropertyGallery({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isLightboxOpen, images.length, selectedImage.id]);
+  }, [isLightboxOpen, images, selectedImage?.id]);
 
   if (!selectedImage) {
     return (
