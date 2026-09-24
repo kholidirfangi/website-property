@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type PropertyImage = {
   id: string;
@@ -18,16 +18,42 @@ export default function PropertyGallery({
   images,
   propertyTitle,
 }: PropertyGalleryProps) {
-  const primaryImage =
-    images.find((image) => image.isPrimary) ?? images[0];
+  const primaryImage = images.find((image) => image.isPrimary) ?? images[0];
 
   const [selectedImageId, setSelectedImageId] = useState(
     primaryImage?.id ?? "",
   );
 
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
   const selectedImage =
-    images.find((image) => image.id === selectedImageId) ??
-    primaryImage;
+    images.find((image) => image.id === selectedImageId) ?? primaryImage;
+
+  useEffect(() => {
+    if (!isLightboxOpen) {
+      return;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsLightboxOpen(false);
+      }
+
+      if (event.key === "ArrowLeft" && images.length > 1) {
+        showPreviousImage();
+      }
+
+      if (event.key === "ArrowRight" && images.length > 1) {
+        showNextImage();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isLightboxOpen, images.length, selectedImage.id]);
 
   if (!selectedImage) {
     return (
@@ -37,10 +63,36 @@ export default function PropertyGallery({
     );
   }
 
+  function showPreviousImage() {
+    const currentIndex = images.findIndex(
+      (image) => image.id === selectedImage.id,
+    );
+
+    const previousIndex =
+      currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+
+    setSelectedImageId(images[previousIndex].id);
+  }
+
+  function showNextImage() {
+    const currentIndex = images.findIndex(
+      (image) => image.id === selectedImage.id,
+    );
+
+    const nextIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+
+    setSelectedImageId(images[nextIndex].id);
+  }
+
   return (
     <div>
       {/* Main Image */}
-      <div className="relative aspect-video overflow-hidden rounded-2xl bg-gray-200">
+      <button
+        type="button"
+        onClick={() => setIsLightboxOpen(true)}
+        className="relative block aspect-video w-full overflow-hidden rounded-2xl bg-gray-200"
+        aria-label="Buka gambar dalam ukuran penuh"
+      >
         <Image
           src={selectedImage.url}
           alt={propertyTitle}
@@ -49,7 +101,7 @@ export default function PropertyGallery({
           sizes="(max-width: 768px) 100vw, 1200px"
           className="object-cover"
         />
-      </div>
+      </button>
 
       {/* Thumbnails */}
       {images.length > 1 && (
@@ -64,9 +116,7 @@ export default function PropertyGallery({
                 onClick={() => setSelectedImageId(image.id)}
                 aria-label={`Lihat foto ${propertyTitle}`}
                 className={`relative aspect-square overflow-hidden rounded-lg border-2 ${
-                  isSelected
-                    ? "border-black"
-                    : "border-transparent"
+                  isSelected ? "border-black" : "border-transparent"
                 }`}
               >
                 <Image
@@ -79,6 +129,54 @@ export default function PropertyGallery({
               </button>
             );
           })}
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {isLightboxOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
+          <button
+            type="button"
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute right-10 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-xl text-white backdrop-blur-sm transition hover:bg-black/60"
+            aria-label="Tutup gambar"
+          >
+            ×
+          </button>
+
+          {/* Previous */}
+          {images.length > 1 && (
+            <button
+              type="button"
+              onClick={showPreviousImage}
+              className="absolute left-10 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-2xl text-white backdrop-blur-sm transition hover:bg-black/60"
+              aria-label="Foto sebelumnya"
+            >
+              <div className="mb-1">‹</div>
+            </button>
+          )}
+
+          <div className="relative h-[80vh] w-full max-w-6xl">
+            <Image
+              src={selectedImage.url}
+              alt={propertyTitle}
+              fill
+              sizes="100vw"
+              className="object-contain"
+            />
+          </div>
+
+          {/* Next */}
+          {images.length > 1 && (
+            <button
+              type="button"
+              onClick={showNextImage}
+              className="absolute right-10 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-2xl text-white backdrop-blur-sm transition hover:bg-black/60"
+              aria-label="Foto berikutnya"
+            >
+              <div className="mb-1">›</div>
+            </button>
+          )}
         </div>
       )}
     </div>
