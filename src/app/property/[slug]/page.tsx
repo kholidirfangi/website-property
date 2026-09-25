@@ -48,7 +48,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </Link>
 
         {/* Gallery */}
-        <div className="mt-6 overflow-hidden rounded-2xl">
+        <div className="mt-6 overflow-hidden rounded-xs">
           <PropertyGallery
             images={property.images}
             propertyTitle={property.title}
@@ -58,11 +58,11 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         {/* Header */}
         <div className="mt-8">
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-black px-3 py-1 text-xs font-medium text-white">
+            <span className="rounded-xs bg-black px-3 py-1 text-xs font-medium text-white">
               {formatListingType(property.listingType)}
             </span>
 
-            <span className="rounded-full bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700">
+            <span className="rounded-xs bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700">
               {formatPropertyStatus(property.status)}
             </span>
           </div>
@@ -88,7 +88,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
           <div className="space-y-8">
             {/* Spesifikasi */}
-            <section className="rounded-2xl bg-white p-6 shadow-sm">
+            <section className="rounded-xs bg-white p-6 shadow-sm">
               <h2 className="text-xl font-semibold">Spesifikasi</h2>
 
               <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-3">
@@ -135,7 +135,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </section>
 
             {/* Lokasi */}
-            <section className="rounded-2xl bg-white p-6 shadow-sm">
+            <section className="rounded-xs bg-white p-6 shadow-sm">
               <h2 className="text-xl font-semibold">Lokasi</h2>
 
               <div className="mt-6 space-y-4">
@@ -176,7 +176,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             {/* Deskripsi */}
             {property.description && (
-              <section className="rounded-2xl bg-white p-6 shadow-sm">
+              <section className="rounded-xs bg-white p-6 shadow-sm">
                 <h2 className="text-xl font-semibold">Deskripsi</h2>
 
                 <p className="mt-4 whitespace-pre-line leading-7 text-gray-600">

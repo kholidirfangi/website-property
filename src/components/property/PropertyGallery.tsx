@@ -109,7 +109,7 @@ export default function PropertyGallery({
       <button
         type="button"
         onClick={() => setIsLightboxOpen(true)}
-        className="relative block aspect-video w-full overflow-hidden rounded-2xl bg-gray-200"
+        className="relative block aspect-video w-full overflow-hidden rounded-xs bg-gray-200"
         aria-label="Buka gambar dalam ukuran penuh"
       >
         <Image
@@ -134,7 +134,7 @@ export default function PropertyGallery({
                 type="button"
                 onClick={() => setSelectedImageId(image.id)}
                 aria-label={`Lihat foto ${propertyTitle}`}
-                className={`relative aspect-square overflow-hidden rounded-lg border-2 ${
+                className={`relative aspect-square overflow-hidden rounded-xs border-2 ${
                   isSelected ? "border-black" : "border-transparent"
                 }`}
               >

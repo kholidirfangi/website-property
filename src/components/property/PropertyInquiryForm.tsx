@@ -62,7 +62,7 @@ export default function PropertyInquiryForm({
   }
 
   return (
-    <div className="rounded-xl bg-white p-6 shadow">
+    <div className="rounded-xs bg-white p-6 shadow">
       <div>
         <h2 className="text-xl font-semibold">Tertarik dengan Property Ini?</h2>
 
@@ -100,7 +100,7 @@ export default function PropertyInquiryForm({
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-2 w-full rounded-lg border px-4 py-2"
+            className="mt-2 w-full rounded-xs border px-4 py-2"
             placeholder="Nama lengkap"
             disabled={loading}
             required
@@ -117,7 +117,7 @@ export default function PropertyInquiryForm({
             type="tel"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
-            className="mt-2 w-full rounded-lg border px-4 py-2"
+            className="mt-2 w-full rounded-xs border px-4 py-2"
             placeholder="08xxxxxxxxxx"
             disabled={loading}
             required
@@ -135,7 +135,7 @@ export default function PropertyInquiryForm({
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="mt-2 w-full rounded-lg border px-4 py-2"
+            className="mt-2 w-full rounded-xs border px-4 py-2"
             placeholder="nama@email.com"
             disabled={loading}
           />
@@ -151,7 +151,7 @@ export default function PropertyInquiryForm({
             id="message"
             value={message}
             onChange={(event) => setMessage(event.target.value)}
-            className="mt-2 w-full rounded-lg border px-4 py-2"
+            className="mt-2 w-full rounded-xs border px-4 py-2"
             placeholder="Contoh: Saya tertarik dengan property ini."
             rows={4}
             disabled={loading}
@@ -161,7 +161,7 @@ export default function PropertyInquiryForm({
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-black px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-xs bg-black px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Mengirim..." : "Kirim Inquiry"}
         </button>
